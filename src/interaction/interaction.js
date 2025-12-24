@@ -1,10 +1,10 @@
-export default function observerInteraction() {
+export function startInteraction() {
   const supported =
     typeof PerformanceObserver !== 'undefined' &&
     PerformanceObserver.supportedEntryTypes &&
     PerformanceObserver.supportedEntryTypes.includes('event');
 
-  if (!supported) return;
+  if (!supported) return () => {};
 
   const entryHandler = (list) => {
     for (const entry of list.getEntries()) {
@@ -35,4 +35,5 @@ export default function observerInteraction() {
   const observer = new PerformanceObserver(entryHandler);
   // durationThreshold: 16 (默认 104ms)，设置为 16ms 可以捕获更多交互细节，或者设置为 40ms 关注卡顿
   observer.observe({ type: 'event', durationThreshold: 40, buffered: true });
+  return () => observer.disconnect();
 }

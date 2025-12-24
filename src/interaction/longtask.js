@@ -1,10 +1,10 @@
-export default function observerLongTask() {
+export function startLongTask() {
   const supported =
     typeof PerformanceObserver !== 'undefined' &&
     PerformanceObserver.supportedEntryTypes &&
     PerformanceObserver.supportedEntryTypes.includes('longtask');
 
-  if (!supported) return;
+  if (!supported) return () => {};
 
   const entryHandler = (list) => {
     for (const entry of list.getEntries()) {
@@ -31,4 +31,5 @@ export default function observerLongTask() {
 
   const observer = new PerformanceObserver(entryHandler);
   observer.observe({ type: 'longtask', buffered: true });
+  return () => observer.disconnect();
 }

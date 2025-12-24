@@ -1,4 +1,4 @@
-export default function observerRequest() {
+export function startRequest() {
   const entryHandler = (list) => {
     const data = list.getEntries();
     for (const entry of data) {
@@ -28,4 +28,5 @@ export default function observerRequest() {
   // 这里不调用 disconnect()，以便持续监听后续产生的网络请求
   const observer = new PerformanceObserver(entryHandler);
   observer.observe({ type: 'resource', buffered: true });
+  return () => observer.disconnect();
 }

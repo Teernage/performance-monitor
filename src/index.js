@@ -1,13 +1,11 @@
-import observeCLS from './observeCLS';
-import observeFCP from './observeFCP';
-import observeFID from './observeFID';
-import observeLCP from './observeLCP';
-import observePaint from './observePaint';
-import observeEntries from './observerEntries';
-import observerLoad from './observerLoad';
-import observerRequest from './observerRequest';
-import observerLongTask from './observerLongTask';
-import observerInteraction from './observerInteraction';
+import { startFP, startFCP, startLCP, startLoad } from './loading';
+import {
+  startFID,
+  startInteraction,
+  startLongTask,
+} from './interaction';
+import { startCLS } from './visualStability';
+import { startEntries, startRequest } from './network';
 
 export default class PerformanceMonitor {
   constructor(options = {}) {
@@ -18,21 +16,23 @@ export default class PerformanceMonitor {
   }
 
   init() {
-    // 核心 Web 指标
-    observeCLS();
-    observeFCP();
-    observeFID();
-    observeLCP();
-    observePaint();
+    // 1. 页面加载与渲染 (Loading & Rendering)
+    startFP();
+    startFCP();
+    startLCP();
+    startLoad(); // Load / Pageshow
 
-    // 资源与网络
-    observeEntries(); // 静态资源
-    observerRequest(); // 动态请求
+    // 2. 交互响应 (Interaction)
+    startFID();
+    startInteraction(); // INP
+    startLongTask(); // JS Long Task
 
-    // 页面加载与体验
-    observerLoad(); // Load/Pageshow
-    observerLongTask(); // JS 长任务
-    observerInteraction(); // 交互性能 (INP 相关)
+    // 3. 视觉稳定性 (Visual Stability)
+    startCLS();
+
+    // 4. 资源与网络 (Resource & Network)
+    startEntries();
+    startRequest();
 
     console.log('Performance Monitor Initialized');
   }

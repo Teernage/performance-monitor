@@ -1,5 +1,5 @@
 export function startLoad() {
-  const onPageShow = (event) => {
+  const onPageShow = (event: any) => {
     requestAnimationFrame(() => {
       ['load'].forEach((type) => {
         const reportData = {
@@ -14,7 +14,7 @@ export function startLoad() {
   };
 
   window.addEventListener('pageshow', onPageShow, true);
-  
+
   return () => {
     window.removeEventListener('pageshow', onPageShow, true);
   };

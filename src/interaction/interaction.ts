@@ -2,11 +2,11 @@ export function startInteraction() {
   const supported =
     typeof PerformanceObserver !== 'undefined' &&
     PerformanceObserver.supportedEntryTypes &&
-    PerformanceObserver.supportedEntryTypes.includes('event');
+    PerformanceObserver.supportedEntryTypes.indexOf('event') >= 0;
 
   if (!supported) return () => {};
 
-  const entryHandler = (list) => {
+  const entryHandler = (list: any) => {
     for (const entry of list.getEntries()) {
       // 过滤掉 duration 很短的交互，减少日志量，只关注慢交互（例如 > 40ms）
       // 或者根据需求记录所有交互
@@ -34,6 +34,10 @@ export function startInteraction() {
 
   const observer = new PerformanceObserver(entryHandler);
   // durationThreshold: 16 (默认 104ms)，设置为 16ms 可以捕获更多交互细节，或者设置为 40ms 关注卡顿
-  observer.observe({ type: 'event', durationThreshold: 40, buffered: true });
+  observer.observe({
+    type: 'event',
+    durationThreshold: 40,
+    buffered: true,
+  } as any);
   return () => observer.disconnect();
 }

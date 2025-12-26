@@ -1,7 +1,7 @@
 import { getElementSelector } from '../../util/index';
 
 export function startLCP() {
-  const entryHandler = (list) => {
+  const entryHandler = (list: any) => {
     for (const entry of list.getEntries()) {
       const json = entry.toJSON();
       const reportData = {

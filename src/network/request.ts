@@ -1,5 +1,5 @@
 export function startRequest() {
-  const entryHandler = (list) => {
+  const entryHandler = (list: any) => {
     const data = list.getEntries();
     for (const entry of data) {
       // 过滤出 API 请求 (Fetch 和 XHR)

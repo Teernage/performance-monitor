@@ -1,8 +1,8 @@
 export function startEntries() {
-  let observer;
+  let observer: any;
 
   const observeEvent = () => {
-    const entryHandler = (list) => {
+    const entryHandler = (list: any) => {
       const data = list.getEntries();
       for (const entry of data) {
         if (

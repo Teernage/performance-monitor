@@ -1,13 +1,10 @@
-export function startFCP() {
-  const entryHandler = (list) => {
+export function startFP() {
+  const entryHandler = (list: any) => {
     for (const entry of list.getEntries()) {
-      if (
-        entry.entryType === 'paint' &&
-        entry.name === 'first-contentful-paint'
-      ) {
+      if (entry.entryType === 'paint' && entry.name === 'first-paint') {
         observer.disconnect();
         const json = entry.toJSON();
-        console.log('FCP:', json);
+        console.log('FP:', json);
         const reportData = {
           ...json,
           type: 'performance',

@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "es5", // 编译成 ES5，兼容旧浏览器
+    "module": "esnext", // 保留 ES 模块语法，交给 Rollup 处理
+    "declaration": true, // 生成 .d.ts 类型文件 (关键！)
+    "declarationDir": "./dist", // 类型文件输出目录
+    "strict": true, // 开启严格模式，代码更健壮
+    "moduleResolution": "node" // 按 Node 方式解析模块
+  },
+  "include": ["src/**/*"] // 编译 src 下的所有文件
+}

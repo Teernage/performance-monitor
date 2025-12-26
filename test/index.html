@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Performance SDK Test</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: #f9f9f9;
+      }
+      h1 {
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+        color: #333;
+      }
+      .card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      h3 {
+        margin-top: 0;
+        color: #555;
+      }
+      button {
+        padding: 10px 15px;
+        cursor: pointer;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        transition: background 0.2s;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      .box {
+        width: 100px;
+        height: 100px;
+        background: coral;
+        margin: 10px 0;
+        display: inline-block;
+        border-radius: 4px;
+      }
+      #log {
+        background: #1e1e1e;
+        color: #0f0;
+        padding: 15px;
+        border-radius: 4px;
+        height: 300px;
+        overflow-y: auto;
+        font-family: 'Consolas', monospace;
+        font-size: 13px;
+      }
+      .log-entry {
+        margin: 5px 0;
+        border-bottom: 1px solid #333;
+        padding-bottom: 2px;
+      }
+      .status-ok {
+        color: green;
+        font-weight: bold;
+      }
+      .status-err {
+        color: red;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Performance SDK Test Playground</h1>
+
+    <div class="card">
+      <h3>SDK Status</h3>
+      <div id="status">Initializing...</div>
+    </div>
+
+    <div class="card">
+      <h3>Test Actions</h3>
+      <p>Click the buttons below to trigger different performance metrics:</p>
+      <div>
+        <button id="btn-interaction">Trigger Interaction (Click)</button>
+        <button id="btn-longtask">Trigger Long Task (100ms)</button>
+        <button id="btn-network">Trigger Network Request</button>
+        <button id="btn-cls">Trigger CLS (Layout Shift)</button>
+      </div>
+      <div id="content-area"></div>
+    </div>
+
+    <div class="card">
+      <h3>Activity Log</h3>
+      <div id="log"></div>
+    </div>
+
+    <!-- Import the UMD build from dist -->
+    <script src="../dist/index.umd.js"></script>
+    <script>
+      // --- Helper: On-screen Logger ---
+      const logEl = document.getElementById('log');
+      function log(msg, data) {
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        const time = new Date().toLocaleTimeString();
+        const dataStr = data ? ` ${JSON.stringify(data)}` : '';
+        entry.textContent = `[${time}] ${msg}${dataStr}`;
+        logEl.appendChild(entry);
+        logEl.scrollTop = logEl.scrollHeight;
+        console.log(`[TestPage] ${msg}`, data || '');
+      }
+
+      // --- SDK Initialization ---
+      try {
+        // Check if SDK is loaded globally
+        if (window.PerformanceSDK) {
+          // The UMD build exposes the class directly as 'PerformanceSDK'
+          const PerformanceMonitor = window.PerformanceSDK;
+
+          const monitor = new PerformanceMonitor({
+            log: true, // Enable SDK internal logging
+          });
+          monitor.init();
+
+          const statusEl = document.getElementById('status');
+          statusEl.textContent = '✅ SDK Initialized Successfully';
+          statusEl.className = 'status-ok';
+          log('SDK initialized.');
+        } else {
+          throw new Error('window.PerformanceSDK is undefined');
+        }
+      } catch (e) {
+        const statusEl = document.getElementById('status');
+        statusEl.textContent = '❌ SDK Initialization Failed: ' + e.message;
+        statusEl.className = 'status-err';
+        log('Error initializing SDK:', e);
+      }
+
+      // --- Test Cases ---
+
+      // 1. Interaction (FID / INP)
+      document
+        .getElementById('btn-interaction')
+        .addEventListener('click', () => {
+          log('Interaction button clicked.');
+          // Simulate a small delay to ensure it registers as an interaction
+          const start = performance.now();
+          while (performance.now() - start < 20) {
+            /* busy wait 20ms */
+          }
+        });
+
+      // 2. Long Task
+      document.getElementById('btn-longtask').addEventListener('click', () => {
+        log('Starting Long Task (Blocking Main Thread for 100ms)...');
+        // Use setTimeout to allow the UI to update first
+        setTimeout(() => {
+          const start = performance.now();
+          while (performance.now() - start < 100) {
+            // Block main thread
+          }
+          log('Long Task finished.');
+        }, 50);
+      });
+
+      // 3. Network Request
+      document.getElementById('btn-network').addEventListener('click', () => {
+        log('Starting Fetch Request...');
+        fetch('https://jsonplaceholder.typicode.com/todos/1')
+          .then((res) => res.json())
+          .then((data) => {
+            log('Network Request Completed', { id: data.id });
+          })
+          .catch((err) => log('Network Request Failed', err));
+      });
+
+      // 4. CLS (Cumulative Layout Shift)
+      document.getElementById('btn-cls').addEventListener('click', () => {
+        log('Triggering Layout Shift...');
+        const content = document.getElementById('content-area');
+        const box = document.createElement('div');
+        box.className = 'box';
+        box.textContent = 'CLS Block';
+        box.style.display = 'flex';
+        box.style.alignItems = 'center';
+        box.style.justifyContent = 'center';
+        box.style.color = '#fff';
+
+        // Insert before existing content to cause shift
+        content.insertBefore(box, content.firstChild);
+
+        // Auto-remove to clean up
+        setTimeout(() => {
+          box.remove();
+          log('CLS Block removed.');
+        }, 1500);
+      });
+    </script>
+  </body>
+</html>

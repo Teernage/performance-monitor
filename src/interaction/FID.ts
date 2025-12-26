@@ -1,7 +1,7 @@
 import { getElementSelector } from '../../util/index';
 
 export function startFID() {
-  const entryHandler = (list) => {
+  const entryHandler = (list: any) => {
     for (const entry of list.getEntries()) {
       observer.disconnect();
       const json = entry.toJSON();

@@ -3,7 +3,7 @@
  * @param element 要生成选择器的元素
  * @returns 元素的唯一选择器字符串
  */
-export const getElementSelector = (element) => {
+export const getElementSelector = (element: HTMLDivElement) => {
   if (!element) return '';
   try {
     let selector = element.tagName.toLowerCase();

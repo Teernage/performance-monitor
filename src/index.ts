@@ -1,14 +1,11 @@
 import { startFP, startFCP, startLCP, startLoad } from './loading';
-import {
-  startFID,
-  startInteraction,
-  startLongTask,
-} from './interaction';
+import { startFID, startInteraction, startLongTask } from './interaction';
 import { startCLS } from './visualStability';
 import { startEntries, startRequest } from './network';
 
 export default class PerformanceMonitor {
-  constructor(options = {}) {
+  options;
+  constructor(options: any = {}) {
     this.options = {
       log: true, // 开发模式下开启日志
       ...options,

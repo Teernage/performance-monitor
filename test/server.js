@@ -9,16 +9,16 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 3000;
 
-// Enable CORS for all routes
+// 为所有路由启用 CORS
 app.use(cors());
-// Parse JSON and text bodies
+// 解析 JSON 与纯文本请求体
 app.use(express.json({ type: ['application/json', 'text/plain'] }));
 
-// Serve static files from 'test' and 'dist' directories
+// 提供 'test' 与 'dist' 目录的静态资源
 app.use('/test', express.static(path.join(__dirname)));
 app.use('/dist', express.static(path.join(__dirname, '../dist')));
 
-// API: Mock delay to test TTFB
+// API：模拟延迟用于测试 TTFB
 app.get('/api/delay/:ms', (req, res) => {
   const ms = parseInt(req.params.ms) || 0;
   setTimeout(() => {
@@ -30,13 +30,13 @@ app.get('/api/delay/:ms', (req, res) => {
   }, ms);
 });
 
-// API: Standard response with Timing-Allow-Origin header
+// API：带 Timing-Allow-Origin 响应头的标准接口
 app.get('/api/timing', (req, res) => {
   res.set('Timing-Allow-Origin', '*');
   res.json({ message: 'This response has Timing-Allow-Origin header' });
 });
 
-// API: Receive performance data
+// API：接收性能数据
 app.post('/api/performance', (req, res) => {
   const data = req.body;
   console.log('Received performance data:', JSON.stringify(data, null, 2));

@@ -1,14 +1,28 @@
-export function startEntries() {
+
+import { sendBehaviorData } from '../report';
+
+export function startEntries(reportUrl: string) {
   let observer: any;
 
   const observeEvent = () => {
     const entryHandler = (list: any) => {
       const data = list.getEntries();
       for (const entry of data) {
+        // 1. 过滤掉 API 请求 (由 startRequest 处理)
         if (
           entry.initiatorType === 'fetch' ||
           entry.initiatorType === 'xmlhttprequest'
         ) {
+          continue;
+        }
+
+        // 2. 防止死循环：过滤掉上报接口自身的请求
+        if (entry.name === reportUrl || entry.name.includes(reportUrl)) {
+          continue;
+        }
+
+        // 3. 过滤掉 Beacon 请求
+        if (entry.initiatorType === 'beacon') {
           continue;
         }
 
@@ -30,7 +44,7 @@ export function startEntries() {
           startTime: performance.now(),
         };
         //说下resourceSize、encodedBodySize、responseBodySize的区别
-        console.log(reportData);
+        sendBehaviorData(reportData, reportUrl);
       }
     };
 

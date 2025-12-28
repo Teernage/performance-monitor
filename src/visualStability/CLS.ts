@@ -1,6 +1,9 @@
-import { onUrlChange, getSelector } from '../util';
 
-export function startCLS() {
+import { onUrlChange, getSelector } from '../util';
+import { sendBehaviorData } from '../report';
+
+export function startCLS(options: any = {}) {
+  const reportUrl = options.reportUrl;
   let clsValue = 0;
   let clsEntries: any[] = [];
 
@@ -15,11 +18,16 @@ export function startCLS() {
       if (entry.sources) {
         entry.sources.forEach((source: any) => {
           if (source.node) {
-            clsEntries.push({
+            const clsEntry = {
               selector: getSelector(source.node),
               value: entry.value,
               // 可以添加更多 debug 信息，如 previousRect, currentRect
-            });
+            };
+            clsEntries.push(clsEntry);
+            
+            if (options.log) {
+               console.log('[CLS] Layout Shift Detected:', clsEntry);
+            }
           }
         });
       }
@@ -38,7 +46,7 @@ export function startCLS() {
       isFinal, // 标记是否为最终值
       pageUrl: window.location.href,
     };
-    console.log('CLS Report:', data);
+    sendBehaviorData(data, reportUrl);
 
     // 上报后清零，为下一个路由做准备
     clsValue = 0;

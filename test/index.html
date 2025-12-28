@@ -92,8 +92,14 @@
         <button id="btn-longtask">Trigger Long Task (100ms)</button>
         <button id="btn-network">Trigger Network Request</button>
         <button id="btn-cls">Trigger CLS (Layout Shift)</button>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0" />
+        <p><strong>SPA Route Simulation:</strong></p>
+        <button id="btn-route-1">Go to /page1</button>
+        <button id="btn-route-2">Go to /page2</button>
       </div>
-      <div id="content-area"></div>
+      <div id="content-area">
+        <h4 id="page-title">Current Page: Home</h4>
+      </div>
     </div>
 
     <div class="card">
@@ -103,105 +109,11 @@
 
     <!-- Import the UMD build from dist -->
     <script src="../dist/index.umd.js"></script>
-    <script>
-      // --- Helper: On-screen Logger ---
-      const logEl = document.getElementById('log');
-      function log(msg, data) {
-        const entry = document.createElement('div');
-        entry.className = 'log-entry';
-        const time = new Date().toLocaleTimeString();
-        const dataStr = data ? ` ${JSON.stringify(data)}` : '';
-        entry.textContent = `[${time}] ${msg}${dataStr}`;
-        logEl.appendChild(entry);
-        logEl.scrollTop = logEl.scrollHeight;
-        console.log(`[TestPage] ${msg}`, data || '');
-      }
-
-      // --- SDK Initialization ---
-      try {
-        // Check if SDK is loaded globally
-        if (window.PerformanceSDK) {
-          // The UMD build exposes the class directly as 'PerformanceSDK'
-          const PerformanceMonitor = window.PerformanceSDK;
-
-          const monitor = new PerformanceMonitor({
-            log: true, // Enable SDK internal logging
-          });
-          monitor.init();
-
-          const statusEl = document.getElementById('status');
-          statusEl.textContent = '✅ SDK Initialized Successfully';
-          statusEl.className = 'status-ok';
-          log('SDK initialized.');
-        } else {
-          throw new Error('window.PerformanceSDK is undefined');
-        }
-      } catch (e) {
-        const statusEl = document.getElementById('status');
-        statusEl.textContent = '❌ SDK Initialization Failed: ' + e.message;
-        statusEl.className = 'status-err';
-        log('Error initializing SDK:', e);
-      }
-
-      // --- Test Cases ---
-
-      // 1. Interaction (FID / INP)
-      document
-        .getElementById('btn-interaction')
-        .addEventListener('click', () => {
-          log('Interaction button clicked.');
-          // Simulate a small delay to ensure it registers as an interaction
-          const start = performance.now();
-          while (performance.now() - start < 20) {
-            /* busy wait 20ms */
-          }
-        });
-
-      // 2. Long Task
-      document.getElementById('btn-longtask').addEventListener('click', () => {
-        log('Starting Long Task (Blocking Main Thread for 100ms)...');
-        // Use setTimeout to allow the UI to update first
-        setTimeout(() => {
-          const start = performance.now();
-          while (performance.now() - start < 100) {
-            // Block main thread
-          }
-          log('Long Task finished.');
-        }, 50);
-      });
-
-      // 3. Network Request
-      document.getElementById('btn-network').addEventListener('click', () => {
-        log('Starting Fetch Request...');
-        fetch('https://jsonplaceholder.typicode.com/todos/1')
-          .then((res) => res.json())
-          .then((data) => {
-            log('Network Request Completed', { id: data.id });
-          })
-          .catch((err) => log('Network Request Failed', err));
-      });
-
-      // 4. CLS (Cumulative Layout Shift)
-      document.getElementById('btn-cls').addEventListener('click', () => {
-        log('Triggering Layout Shift...');
-        const content = document.getElementById('content-area');
-        const box = document.createElement('div');
-        box.className = 'box';
-        box.textContent = 'CLS Block';
-        box.style.display = 'flex';
-        box.style.alignItems = 'center';
-        box.style.justifyContent = 'center';
-        box.style.color = '#fff';
-
-        // Insert before existing content to cause shift
-        content.insertBefore(box, content.firstChild);
-
-        // Auto-remove to clean up
-        setTimeout(() => {
-          box.remove();
-          log('CLS Block removed.');
-        }, 1500);
-      });
-    </script>
+    <!-- Modularized Test Cases -->
+    <script src="./utils.js"></script>
+    <script src="./case-interaction.js"></script>
+    <script src="./case-longtask.js"></script>
+    <script src="./case-network.js"></script>
+    <script src="./case-cls.js"></script>
   </body>
 </html>

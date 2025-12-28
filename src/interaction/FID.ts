@@ -1,6 +1,8 @@
-import { getElementSelector } from '../../util/index';
 
-export function startFID() {
+import { getSelector } from '../util/index';
+import { sendBehaviorData } from '../report';
+
+export function startFID(reportUrl: string) {
   const entryHandler = (list: any) => {
     for (const entry of list.getEntries()) {
       observer.disconnect();
@@ -15,9 +17,9 @@ export function startFID() {
         type: 'performance',
         subType: 'first-input',
         pageUrl: window.location.href,
-        elementSelector: getElementSelector(entry.target),
+        elementSelector: getSelector(entry.target),
       };
-      console.log('FID:', reportData);
+      sendBehaviorData(reportData, reportUrl);
     }
   };
 

@@ -1,16 +1,19 @@
-export function startFP() {
+
+import { sendBehaviorData } from '../report';
+
+export function startFP(reportUrl: string) {
   const entryHandler = (list: any) => {
     for (const entry of list.getEntries()) {
       if (entry.entryType === 'paint' && entry.name === 'first-paint') {
         observer.disconnect();
         const json = entry.toJSON();
-        console.log('FP:', json);
         const reportData = {
           ...json,
           type: 'performance',
           name: entry.name,
           pageUrl: window.location.href,
         };
+        sendBehaviorData(reportData, reportUrl);
       }
     }
   };

@@ -1,7 +1,15 @@
-export function startRequest() {
+
+import { sendBehaviorData } from '../report';
+
+export function startRequest(reportUrl: string) {
   const entryHandler = (list: any) => {
     const data = list.getEntries();
     for (const entry of data) {
+      // 防止死循环：过滤掉上报接口自身的请求
+      if (entry.name === reportUrl || entry.name.includes(reportUrl)) {
+        continue;
+      }
+
       // 过滤出 API 请求 (Fetch 和 XHR)
       if (
         entry.initiatorType === 'fetch' ||
@@ -20,7 +28,7 @@ export function startRequest() {
           startTime: entry.startTime, // 请求开始时间
           pageUrl: window.location.href,
         };
-        console.log('Network Request:', reportData);
+        sendBehaviorData(reportData, reportUrl);
       }
     }
   };

@@ -1,3 +1,4 @@
+
 export { startFID } from './FID';
-export { startInteraction } from './interaction';
+export { startINP } from './INP';
 export { startLongTask } from './longtask';

@@ -1,4 +1,6 @@
-export function startLoad() {
+import { sendBehaviorData } from '../report';
+
+export function startLoad(reportUrl: string) {
   const onPageShow = (event: any) => {
     requestAnimationFrame(() => {
       ['load'].forEach((type) => {
@@ -8,7 +10,7 @@ export function startLoad() {
           pageUrl: window.location.href,
           startTime: performance.now() - event.timeStamp,
         };
-        console.log(reportData);
+        sendBehaviorData(reportData, reportUrl);
       });
     });
   };

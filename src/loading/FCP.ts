@@ -1,4 +1,7 @@
-export function startFCP() {
+
+import { sendBehaviorData } from '../report';
+
+export function startFCP(reportUrl: string) {
   const entryHandler = (list: any) => {
     for (const entry of list.getEntries()) {
       if (
@@ -7,13 +10,13 @@ export function startFCP() {
       ) {
         observer.disconnect();
         const json = entry.toJSON();
-        console.log('FCP:', json);
         const reportData = {
           ...json,
           type: 'performance',
           name: entry.name,
           pageUrl: window.location.href,
         };
+        sendBehaviorData(reportData, reportUrl);
       }
     }
   };

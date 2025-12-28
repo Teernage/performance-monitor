@@ -1,4 +1,6 @@
-export function startInteraction() {
+import { sendBehaviorData } from '../report';
+
+export function startINP(reportUrl: string) {
   const supported =
     typeof PerformanceObserver !== 'undefined' &&
     PerformanceObserver.supportedEntryTypes &&
@@ -27,7 +29,7 @@ export function startInteraction() {
           interactionId: entry.interactionId,
           pageUrl: window.location.href,
         };
-        console.log('Interaction:', reportData);
+        sendBehaviorData(reportData, reportUrl);
       }
     }
   };

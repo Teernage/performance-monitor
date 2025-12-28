@@ -1,3 +1,4 @@
+
 export const getSelector = (element: any) => {
   if (!element) return '';
   try {
@@ -18,8 +19,9 @@ export const getSelector = (element: any) => {
   }
 };
 
- * @param {Function} cb 回调函数
- */
+/** 
+ * @param { Function } cb 回调函数
+  */
 export const onUrlChange = (cb: () => void) => {
   // 1. 监听浏览器前进/后退
   window.addEventListener('popstate', cb);

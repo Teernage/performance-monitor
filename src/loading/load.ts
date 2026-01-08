@@ -8,7 +8,8 @@ export function startLoad(reportUrl: string) {
           type: 'performance',
           subType: type,
           pageUrl: window.location.href,
-          startTime: performance.now() - event.timeStamp,
+          startTime: event.timeStamp,
+          delay: performance.now() - event.timeStamp,
         };
         sendBehaviorData(reportData, reportUrl);
       });
